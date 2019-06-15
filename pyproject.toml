@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-webhook-signature"
-version = "0.1.0"
+version = "0.1.1"
 description = "HMAC-based webhook signature generation and verification with timing-safe comparison"
 readme = "README.md"
 license = "MIT"
@@ -24,6 +24,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/philiprehberger/py-webhook-signature"
+Homepage = "https://github.com/philiprehberger/py-webhook-signature#readme"
 Repository = "https://github.com/philiprehberger/py-webhook-signature"
 Issues = "https://github.com/philiprehberger/py-webhook-signature/issues"
+Changelog = "https://github.com/philiprehberger/py-webhook-signature/blob/main/CHANGELOG.md"
