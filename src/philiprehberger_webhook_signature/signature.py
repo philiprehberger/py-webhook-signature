@@ -1,0 +1,102 @@
+from __future__ import annotations
+
+import hashlib
+import hmac
+import time
+from dataclasses import dataclass
+
+
+class SignatureError(Exception):
+    pass
+
+
+class SignatureExpiredError(SignatureError):
+    def __init__(self, age: float, max_age: float) -> None:
+        self.age = age
+        self.max_age = max_age
+        super().__init__(f"Signature expired: age {age:.1f}s exceeds max {max_age:.1f}s")
+
+
+class SignatureMismatchError(SignatureError):
+    def __init__(self) -> None:
+        super().__init__("Signature verification failed")
+
+
+@dataclass
+class SignedPayload:
+    signature: str
+    timestamp: int
+    body: str
+
+    def to_header(self, prefix: str = "sha256") -> str:
+        return f"t={self.timestamp},{prefix}={self.signature}"
+
+
+def sign(
+    payload: str | bytes,
+    secret: str | bytes,
+    algorithm: str = "sha256",
+    timestamp: int | None = None,
+) -> SignedPayload:
+    if isinstance(payload, str):
+        payload = payload.encode("utf-8")
+    if isinstance(secret, str):
+        secret = secret.encode("utf-8")
+
+    ts = timestamp if timestamp is not None else int(time.time())
+    message = f"{ts}.{payload.decode('utf-8')}".encode("utf-8")
+
+    hash_func = getattr(hashlib, algorithm, None)
+    if hash_func is None:
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
+
+    sig = hmac.new(secret, message, hash_func).hexdigest()
+
+    return SignedPayload(signature=sig, timestamp=ts, body=payload.decode("utf-8"))
+
+
+def verify(
+    payload: str | bytes,
+    secret: str | bytes,
+    signature: str,
+    timestamp: int,
+    algorithm: str = "sha256",
+    max_age: float | None = 300.0,
+) -> bool:
+    if isinstance(payload, str):
+        payload = payload.encode("utf-8")
+    if isinstance(secret, str):
+        secret = secret.encode("utf-8")
+
+    if max_age is not None:
+        age = time.time() - timestamp
+        if age > max_age:
+            raise SignatureExpiredError(age, max_age)
+
+    message = f"{timestamp}.{payload.decode('utf-8')}".encode("utf-8")
+
+    hash_func = getattr(hashlib, algorithm, None)
+    if hash_func is None:
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
+
+    expected = hmac.new(secret, message, hash_func).hexdigest()
+
+    if not hmac.compare_digest(signature, expected):
+        raise SignatureMismatchError()
+
+    return True
+
+
+def parse_header(header: str, prefix: str = "sha256") -> tuple[str, int]:
+    parts: dict[str, str] = {}
+    for part in header.split(","):
+        key, _, value = part.partition("=")
+        parts[key.strip()] = value.strip()
+
+    timestamp = int(parts.get("t", "0"))
+    sig = parts.get(prefix, "")
+
+    if not sig:
+        raise SignatureError(f"No {prefix} signature found in header")
+
+    return sig, timestamp
