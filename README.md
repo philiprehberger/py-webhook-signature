@@ -78,6 +78,14 @@ verify(payload="data", secret="secret", signature=sig, timestamp=ts, algorithm="
 verify(payload, secret, signature, timestamp, max_age=None)
 ```
 
+
+## Development
+
+```bash
+pip install -e .
+python -m pytest tests/ -v
+```
+
 ## License
 
 MIT
