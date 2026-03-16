@@ -1,5 +1,9 @@
 # philiprehberger-webhook-signature
 
+[![Tests](https://github.com/philiprehberger/py-webhook-signature/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/py-webhook-signature/actions/workflows/publish.yml)
+[![PyPI version](https://img.shields.io/pypi/v/philiprehberger-webhook-signature.svg)](https://pypi.org/project/philiprehberger-webhook-signature/)
+[![License](https://img.shields.io/github/license/philiprehberger/py-webhook-signature)](LICENSE)
+
 HMAC-based webhook signature generation and verification with timing-safe comparison.
 
 ## Installation
