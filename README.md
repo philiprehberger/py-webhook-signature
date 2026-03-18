@@ -79,6 +79,18 @@ verify(payload, secret, signature, timestamp, max_age=None)
 ```
 
 
+## API
+
+| Function / Class | Description |
+|------------------|-------------|
+| `sign(payload, secret, algorithm, timestamp)` | Generate an HMAC signature for a webhook payload |
+| `verify(payload, secret, signature, timestamp, algorithm, max_age)` | Verify a webhook signature with timing-safe comparison |
+| `parse_header(header, prefix)` | Parse a signature header string into (signature, timestamp) tuple |
+| `SignedPayload` | Signed payload with `signature`, `timestamp`, `body`, and `to_header()` |
+| `SignatureError` | Base exception for signature errors |
+| `SignatureExpiredError` | Raised when signature age exceeds max_age |
+| `SignatureMismatchError` | Raised when signature verification fails |
+
 ## Development
 
 ```bash
