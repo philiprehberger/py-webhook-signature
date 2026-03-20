@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-webhook-signature"
-version = "0.1.5"
+version = "0.1.6"
 description = "HMAC-based webhook signature generation and verification with timing-safe comparison"
 readme = "README.md"
 license = "MIT"
@@ -31,3 +31,9 @@ Changelog = "https://github.com/philiprehberger/py-webhook-signature/blob/main/C
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/philiprehberger_webhook_signature"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+strict = true
