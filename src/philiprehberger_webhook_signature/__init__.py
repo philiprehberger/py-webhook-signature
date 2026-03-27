@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from .signature import (
     sign,
     verify,
+    verify_with_rotation,
     parse_header,
     SignatureError,
     SignatureExpiredError,
@@ -11,6 +14,7 @@ from .signature import (
 __all__ = [
     "sign",
     "verify",
+    "verify_with_rotation",
     "parse_header",
     "SignatureError",
     "SignatureExpiredError",
