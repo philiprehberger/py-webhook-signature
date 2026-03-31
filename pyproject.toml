@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-webhook-signature"
-version = "0.2.0"
+version = "0.2.1"
 description = "HMAC-based webhook signature generation and verification with timing-safe comparison"
 readme = "README.md"
 license = "MIT"
