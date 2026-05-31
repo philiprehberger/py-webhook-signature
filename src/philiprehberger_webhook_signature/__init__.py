@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from .signature import (
     sign,
+    sign_headers,
     verify,
+    verify_header,
     verify_with_rotation,
     parse_header,
     SignatureError,
@@ -13,7 +15,9 @@ from .signature import (
 
 __all__ = [
     "sign",
+    "sign_headers",
     "verify",
+    "verify_header",
     "verify_with_rotation",
     "parse_header",
     "SignatureError",

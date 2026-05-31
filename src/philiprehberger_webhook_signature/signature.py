@@ -145,6 +145,54 @@ def verify_with_rotation(
         raise
 
 
+def sign_headers(
+    payload: str | bytes,
+    secret: str | bytes,
+    *,
+    header_name: str = "X-Webhook-Signature",
+    algorithm: str = "sha256",
+    timestamp: int | None = None,
+) -> dict[str, str]:
+    """Sign *payload* and return an HTTP-ready headers dict.
+
+    Returns:
+        Dict like {"X-Webhook-Signature": "t=1700000000,sha256=..."}.
+    """
+    signed = sign(payload, secret, algorithm=algorithm, timestamp=timestamp)
+    return {header_name: signed.to_header(prefix=algorithm)}
+
+
+def verify_header(
+    payload: str | bytes,
+    secret: str | bytes,
+    header_value: str,
+    *,
+    algorithm: str = "sha256",
+    max_age: float | None = 300.0,
+) -> bool:
+    """Parse a signature header and verify it in one call.
+
+    Args:
+        payload: The raw webhook body.
+        secret: The signing secret.
+        header_value: The full header value, e.g. ``"t=1700000000,sha256=..."``.
+        algorithm: Hash algorithm name (must match the prefix in the header).
+        max_age: Max signature age in seconds. Pass None to disable.
+
+    Returns:
+        True on success. Raises SignatureExpiredError or SignatureMismatchError on failure.
+    """
+    sig, ts = parse_header(header_value, prefix=algorithm)
+    return verify(
+        payload=payload,
+        secret=secret,
+        signature=sig,
+        timestamp=ts,
+        algorithm=algorithm,
+        max_age=max_age,
+    )
+
+
 def parse_header(header: str, prefix: str = "sha256") -> tuple[str, int]:
     parts: dict[str, str] = {}
     for part in header.split(","):

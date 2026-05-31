@@ -65,6 +65,28 @@ verify_with_rotation(
 )
 ```
 
+### One-call sign and verify
+
+For the common case of producing a header dict and verifying an incoming header in one step:
+
+```python
+from philiprehberger_webhook_signature import sign_headers, verify_header
+
+# Producer side: build HTTP-ready headers
+headers = sign_headers('{"event": "order.created"}', secret="whsec_abc123")
+# {"X-Webhook-Signature": "t=1700000000,sha256=..."}
+
+# Consumer side: verify the incoming header value in one call
+verify_header(
+    payload=request.body,
+    secret="whsec_abc123",
+    header_value=request.headers["X-Webhook-Signature"],
+    max_age=300.0,
+)
+```
+
+Use `header_name="X-Stripe-Signature"` (or any custom name) to match your provider's convention.
+
 ### Error Handling
 
 ```python
@@ -103,7 +125,9 @@ verify(payload, secret, signature, timestamp, max_age=None)
 | Function / Class | Description |
 |------------------|-------------|
 | `sign(payload, secret, algorithm, timestamp)` | Generate an HMAC signature for a webhook payload |
+| `sign_headers(payload, secret, header_name, algorithm, timestamp)` | Sign a payload and return an HTTP-ready headers dict |
 | `verify(payload, secret, signature, timestamp, algorithm, max_age)` | Verify a webhook signature with timing-safe comparison |
+| `verify_header(payload, secret, header_value, algorithm, max_age)` | Parse a signature header and verify it in one call |
 | `verify_with_rotation(payload, signature, current_secret, previous_secret, tolerance, algorithm, timestamp)` | Verify with key rotation support (tries current then previous secret) |
 | `parse_header(header, prefix)` | Parse a signature header string into (signature, timestamp) tuple |
 | `SignedPayload` | Signed payload with `signature`, `timestamp`, `body`, and `to_header()` |
